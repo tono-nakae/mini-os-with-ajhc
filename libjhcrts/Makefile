@@ -1,4 +1,4 @@
-HASKELL_SRC = Main.hs Time.hs Util.hs Xen.hs Struct.hs
+HASKELL_SRC = Main.hs Time.hs Util.hs Xen.hs Struct.hs Console.hs XenconsRing.hs
 STUB = TimeShadowInfoStub.hs
 
 all: libjhcrts.a
