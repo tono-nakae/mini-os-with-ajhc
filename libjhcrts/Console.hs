@@ -8,3 +8,5 @@ initConsole = do printk "Initialising console ... "
                  xenconsRingInit
                  setConsoleInitialised 1
                  printk "done\n"
+
+

@@ -1,4 +1,10 @@
 struct xencons_interface {
+  char[] in;
+  char[] out;
+  uint32_t in_cons;
+  uint32_t in_prod;
+  uint32_t out_cons;
+  uint32_t out_prod;
 };
 struct xenbus_event {
 };

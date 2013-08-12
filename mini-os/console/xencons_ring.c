@@ -32,10 +32,10 @@ static inline void notify_daemon(struct consfront_dev *dev)
 static inline struct xencons_interface *xencons_interface(void)
 {
     return mfn_to_virt(start_info.console.domU.mfn);
-} 
- 
+}
+
 int xencons_ring_send_no_notify(struct consfront_dev *dev, const char *data, unsigned len)
-{	
+{
     int sent = 0;
 	struct xencons_interface *intf;
 	XENCONS_RING_IDX cons, prod;
@@ -55,7 +55,7 @@ int xencons_ring_send_no_notify(struct consfront_dev *dev, const char *data, uns
 
 	wmb();
 	intf->out_prod = prod;
-    
+
     return sent;
 }
 
@@ -67,7 +67,7 @@ int xencons_ring_send(struct consfront_dev *dev, const char *data, unsigned len)
     notify_daemon(dev);
 
     return sent;
-}	
+}
 
 
 
@@ -224,7 +224,7 @@ struct consfront_dev *init_consfront(char *_nodename)
 #endif
 
     snprintf(path, sizeof(path), "%s/backend-id", nodename);
-    if ((res = xenbus_read_integer(path)) < 0) 
+    if ((res = xenbus_read_integer(path)) < 0)
         return NULL;
     else
         dev->dom = res;
@@ -306,7 +306,7 @@ done:
         XenbusState state;
         char path[strlen(dev->backend) + 1 + 19 + 1];
         snprintf(path, sizeof(path), "%s/state", dev->backend);
-        
+
 	xenbus_watch_path_token(XBT_NIL, path, path, &dev->events);
         msg = NULL;
         state = xenbus_read_integer(path);
@@ -353,5 +353,8 @@ void hs_notify_daemon(struct consfront_dev *dev) {
 }
 void* hs_handle_input(void) {
   return &handle_input;
+}
+void hs_mb(void) {
+  mb();
 }
 #include "../../stub/stub/xenconsole_c_stub.h"
