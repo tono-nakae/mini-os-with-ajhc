@@ -1,8 +1,3 @@
-struct dom_u {
-  uint64_t mfn;
-  uint32_t evtchn;
-};
-
 struct xencons_interface {
 };
 struct xenbus_event {
