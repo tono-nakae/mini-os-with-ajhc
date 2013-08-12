@@ -1,14 +1,14 @@
-/* 
+/*
  ****************************************************************************
  * (C) 2006 - Grzegorz Milos - Cambridge University
  ****************************************************************************
  *
  *        File: console.h
  *      Author: Grzegorz Milos
- *     Changes: 
- *              
+ *     Changes:
+ *
  *        Date: Mar 2006
- * 
+ *
  * Environment: Xen Minimal OS
  * Description: Console interface.
  *
@@ -21,19 +21,19 @@
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
- 
+
 #include <mini-os/types.h>
 #include <mini-os/wait.h>
 #include <mini-os/mm.h>
@@ -50,7 +50,7 @@
 #define USE_XEN_CONSOLE
 
 
-/* If console not initialised the printk will be sent to xen serial line 
+/* If console not initialised the printk will be sent to xen serial line
    NOTE: you need to enable verbose in xen/Rules.mk for it to work. */
 static int console_initialised = 0;
 
@@ -63,7 +63,7 @@ void xencons_rx(char *buf, unsigned len, struct pt_regs *regs)
         /* Just repeat what's written */
         buf[len] = '\0';
         printk("%s", buf);
-        
+
         if(buf[len-1] == '\r')
             printk("\nNo console input handler.\n");
     }
@@ -111,16 +111,16 @@ void console_print(struct consfront_dev *dev, char *data, int length)
         copied_ptr[length] = '\n';
         length++;
     }
-    
+
     ring_send_fn(dev, copied_ptr, length);
 }
 
 void print(int direct, const char *fmt, va_list args)
 {
     static char   buf[1024];
-    
+
     (void)vsnprintf(buf, sizeof(buf), fmt, args);
- 
+
     if(direct)
     {
         (void)HYPERVISOR_console_io(CONSOLEIO_write, strlen(buf), buf);
@@ -128,9 +128,9 @@ void print(int direct, const char *fmt, va_list args)
     } else {
 #ifndef USE_XEN_CONSOLE
     if(!console_initialised)
-#endif    
+#endif
             (void)HYPERVISOR_console_io(CONSOLEIO_write, strlen(buf), buf);
-        
+
         console_print(NULL, buf, strlen(buf));
     }
 }
@@ -140,7 +140,7 @@ void printk(const char *fmt, ...)
     va_list       args;
     va_start(args, fmt);
     print(0, fmt, args);
-    va_end(args);        
+    va_end(args);
 }
 
 void xprintk(const char *fmt, ...)
@@ -159,3 +159,14 @@ void fini_console(struct consfront_dev *dev)
 void hs_set_console_initialised(int n) {
     console_initialised = n;
 }
+
+void init_console2(void)
+{
+    printk("Initialising console ... ");
+    xencons_ring_init2();
+    console_initialised = 1;
+    /* This is also required to notify the daemon */
+    printk("done.\n");
+}
+
+

@@ -336,6 +336,43 @@ void xencons_resume(void)
 	(void)xencons_ring_init();
 }
 
+struct consfront_dev *xencons_ring_init2(void)
+{
+	int err;
+	struct consfront_dev *dev;
+
+	if (!start_info.console.domU.evtchn)
+		return 0;
+
+	dev = malloc(sizeof(struct consfront_dev));
+	memset(dev, 0, sizeof(struct consfront_dev));
+	dev->nodename = "device/console";
+	dev->dom = 0;
+	dev->backend = 0;
+	dev->ring_ref = 0;
+
+#ifdef HAVE_LIBC
+	dev->fd = -1;
+#endif
+	dev->evtchn = start_info.console.domU.evtchn;
+	dev->ring = (struct xencons_interface *) mfn_to_virt(start_info.console.domU.mfn);
+
+	err = bind_evtchn(dev->evtchn, handle_input, dev);
+	if (err <= 0) {
+		printk("XEN console request chn bind failed %i\n", err);
+                free(dev);
+		return NULL;
+	}
+        unmask_evtchn(dev->evtchn);
+
+	/* In case we have in-flight data after save/restore... */
+	notify_daemon(dev);
+
+	return dev;
+}
+
+
+
 // ------------------------------
 // Haskell Interface
 // ------------------------------

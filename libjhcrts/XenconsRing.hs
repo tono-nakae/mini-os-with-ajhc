@@ -37,7 +37,7 @@ xenconsRingInit = do evtch <- getEvtch
                                       , consfrontDevRing    = castPtr ring
                                     }
                           ptrDev <- toC dev
-                          ptrHandleInput <- handleInput
+--                          ptrHandleInput <- handleInput
                           err <-  bindEvtchn evtch ptrHandleInput $ castPtr ptrDev
                           if err <= 0 then
                             do printk $ "XEN console request chn bind failed " ++ show err ++ "\n"
