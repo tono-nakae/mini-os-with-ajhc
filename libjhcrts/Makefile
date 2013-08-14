@@ -1,5 +1,5 @@
-HASKELL_SRC = Main.hs Time.hs Util.hs Xen.hs Struct.hs Console.hs XenconsRing.hs
-STUB = TimeShadowInfoStub.hs XenconsoleStub.hs
+HASKELL_SRC = Main.hs Time.hs Util.hs Xen.hs Struct.hs Console.hs XenconsRing.hs Gnttab.hs
+STUB = TimeShadowInfoStub.hs XenconsoleStub.hs GnttabStub.hs
 
 all: libjhcrts.a
 
@@ -7,7 +7,7 @@ all: libjhcrts.a
 #  Haskell to C
 # ---------------------
 jhc_custom/main_code.c: $(HASKELL_SRC) $(STUB)
-	ajhc -funboxed-values -fffi -fcpp -C --tdir rts -o $@ $^
+	ajhc -funboxed-values -fffi -fcpp -C --tdir rts -dgrin -dgrin-final -o $@ $^
 
 $(STUB) : $(addprefix ../stub/stub/, $(STUB))
 	cp -v $^ .

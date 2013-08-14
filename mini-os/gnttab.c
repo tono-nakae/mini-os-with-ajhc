@@ -1,14 +1,14 @@
-/* 
+/*
  ****************************************************************************
  * (C) 2006 - Cambridge University
  ****************************************************************************
  *
  *        File: gnttab.c
- *      Author: Steven Smith (sos22@cam.ac.uk) 
+ *      Author: Steven Smith (sos22@cam.ac.uk)
  *     Changes: Grzegorz Milos (gm281@cam.ac.uk)
- *              
+ *
  *        Date: July 2006
- * 
+ *
  * Environment: Xen Minimal OS
  * Description: Simple grant tables implementation. About as stupid as it's
  *  possible to be and still work.
@@ -193,6 +193,7 @@ init_gnttab(void)
     HYPERVISOR_grant_table_op(GNTTABOP_setup_table, &setup, 1);
     gnttab_table = map_frames(frames, NR_GRANT_FRAMES);
     printk("gnttab_table mapped at %p.\n", gnttab_table);
+    printk("%d\n", NR_GRANT_ENTRIES);
 }
 
 void
